@@ -1,6 +1,6 @@
 # Pg2pubsub [![Build Status](https://semaphoreci.com/api/v1/kbremner/pg2pubsub/branches/master/badge.svg)](https://semaphoreci.com/kbremner/pg2pubsub)
 
-Implementation of Pub/Sub communication between processes, local and remote, using (PG2)[http://erlang.org/doc/man/pg2.html].
+Implementation of Pub/Sub communication between processes, local and remote, using [PG2](http://erlang.org/doc/man/pg2.html).
 
 ## Installation
 

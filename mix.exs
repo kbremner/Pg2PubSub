@@ -7,6 +7,8 @@ defmodule Pg2pubsub.Mixfile do
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description,
+     package: package,
      deps: deps]
   end
 
@@ -28,5 +30,20 @@ defmodule Pg2pubsub.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     []
+  end
+
+  defp description do
+    """
+    A PubSub implementation for Elixir, using PG2 (Erlang process groups).
+    """
+  end
+
+  defp package do
+    [# These are the default files included in the package
+     files: ["lib", "mix.exs", "README*", "LICENSE*"],
+     maintainers: ["Kyle Bremner"],
+     licenses: ["MIT"],
+     links: %{"GitHub" => "https://github.com/kbremner/pg2pubsub",
+      "Builds" => "https://semaphoreci.com/kbremner/pg2pubsub"}]
   end
 end
