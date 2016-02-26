@@ -9,6 +9,7 @@ defmodule Pg2pubsub.Mixfile do
      start_permanent: Mix.env == :prod,
      description: description,
      package: package,
+     source_url: "https://github.com/kbremner/pg2pubsub",
      deps: deps]
   end
 
