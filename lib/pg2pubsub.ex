@@ -9,18 +9,18 @@ defmodule Pg2PubSub do
 
   def init(:ok) do
     Logger.debug "Publisher started (#{inspect self})"
-    {:ok, []}
+    {:ok, nil}
   end
 
-  def subscribe(slug, pid) do
+  def subscribe(pid, slug) do
     GenServer.call(pid, {:subscribe, slug, self})
   end
 
-  def unsubscribe(slug, pid) do
+  def unsubscribe(pid, slug) do
     GenServer.call(pid, {:unsubscribe, slug, self})
   end
 
-  def publish(slug, events, pid) do
+  def publish(pid, slug, events) do
     GenServer.cast(pid, {:publish, slug, events})
   end
 
@@ -35,7 +35,7 @@ defmodule Pg2PubSub do
         unless pid in pids do
           :pg2.join(topic, pid)
           Logger.debug "#{inspect from_pid} subscribed to #{topic}"
-          {:reply, :ok, [pid|pids]}
+          {:reply, :ok, s}
       else
         Logger.debug "#{inspect from_pid} already subscribed to #{topic}"
         GenServer.reply(from, {:already_registered, pids})
@@ -44,17 +44,15 @@ defmodule Pg2PubSub do
     end
   end
 
-  def handle_call({:unsubscribe, topic, pid}, {from_pid, _ref}, s) do
+  def handle_call({:unsubscribe, topic, pid}, from = {from_pid, _ref}, s) do
     Logger.debug "#{inspect from_pid} unsubscribing from #{topic}..."
     case :pg2.leave(topic, pid) do
-      {:error, error} ->
-        Logger.warn "#{inspect from_pid} failed to unsubscribe from #{topic}: #{error}"
-        members = :pg2.get_members(topic)
-        {:noreply, members}
+      {:error, {:no_such_group, _topic}} ->
+        Logger.warn "no subscribers for topic #{topic}"
+        {:reply, :ok, s}
       :ok ->
         Logger.debug "#{inspect from_pid} unsubscribed from #{topic}"
-        members = :pg2.get_members(topic)
-        {:reply, :ok, members}
+        {:reply, :ok, s}
     end
   end
 
