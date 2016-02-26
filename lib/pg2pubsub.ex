@@ -2,9 +2,20 @@ defmodule Pg2PubSub do
   @moduledoc """
   Provides methods for subscribing and publishing to named topics.
   """
+
   use GenServer
   require Logger
 
+  @doc """
+  Starts a PubSub process linked to the calling process
+
+  ## Examples
+
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> is_pid(pid)
+      true
+
+  """
   @spec start_link() :: GenServer.on_start
   def start_link() do
     :ok = Logger.debug "Publisher starting..."
@@ -16,19 +27,84 @@ defmodule Pg2PubSub do
     {:ok, self}
   end
 
+  @doc """
+  Subscribe to a topic
+
+  ## Parameters
+
+    - pid: Process ID for the started PubSub process
+    - topic: Name of the topic to subscribe to
+
+  ## Examples
+
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> Pg2PubSub.subscribe(pid, "foo")
+      :ok
+
+      # subscribing a second time has no effect
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> Pg2PubSub.subscribe(pid, "foo")
+      :ok
+      iex> Pg2PubSub.subscribe(pid, "foo")
+      {:already_registered, [self]}
+
+  """
   @spec subscribe(pid, String.t) :: term
-  def subscribe(pid, slug) do
-    GenServer.call(pid, {:subscribe, slug, self})
+  def subscribe(pid, topic) do
+    GenServer.call(pid, {:subscribe, topic, self})
   end
 
+
+  @doc """
+  Unsubscribe from a topic
+
+  ## Parameters
+
+    - pid: Process ID for the started PubSub process
+    - topic: Name of the topic to unsubscribe from
+
+  ## Examples
+
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> Pg2PubSub.subscribe(pid, "foo")
+      :ok
+      iex> Pg2PubSub.unsubscribe(pid, "foo")
+      :ok
+
+      # unsubscribing when not subscribed will still give an okay result
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> Pg2PubSub.unsubscribe(pid, "foo")
+      :ok
+
+  """
   @spec unsubscribe(pid, String.t) :: term
-  def unsubscribe(pid, slug) do
-    GenServer.call(pid, {:unsubscribe, slug, self})
+  def unsubscribe(pid, topic) do
+    GenServer.call(pid, {:unsubscribe, topic, self})
   end
 
+
+  @doc """
+  Publish to a topic
+
+  ## Parameters
+
+    - pid: Process ID for the started PubSub process
+    - topic: Name of the topic to unsubscribe from
+
+  ## Examples
+
+      iex> {:ok, pid} = Pg2PubSub.start_link
+      iex> Pg2PubSub.subscribe(pid, "foo")
+      :ok
+      iex> Pg2PubSub.publish(pid, "foo", "bar")
+      :ok
+      iex> receive do msg -> msg end
+      "bar"
+
+  """
   @spec publish(pid, String.t, String.t) :: :ok
-  def publish(pid, slug, msg) do
-    GenServer.cast(pid, {:publish, slug, msg})
+  def publish(pid, topic, msg) do
+    GenServer.cast(pid, {:publish, topic, msg})
   end
 
   @spec handle_call(term, GenServer.from, term) :: {:reply, :ok, term} | {:stop, term, term}
