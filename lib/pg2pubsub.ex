@@ -102,7 +102,7 @@ defmodule Pg2PubSub do
       "bar"
 
   """
-  @spec publish(pid, String.t, String.t) :: :ok
+  @spec publish(pid, String.t, any) :: :ok
   def publish(pid, topic, msg) do
     GenServer.cast(pid, {:publish, topic, msg})
   end
