@@ -3,7 +3,7 @@ defmodule Pg2pubsub.Mixfile do
 
   def project do
     [app: :pg2pubsub,
-     version: version,
+     version: "0.1.12",
      elixir: "~> 1.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -47,13 +47,5 @@ defmodule Pg2pubsub.Mixfile do
      licenses: ["MIT"],
      links: %{"GitHub" => "https://github.com/kbremner/pg2pubsub",
       "Builds" => "https://semaphoreci.com/kbremner/pg2pubsub"}]
-  end
-
-  defp version do
-    ver = System.get_env("version")
-    if ver == nil do
-      ver = "0.0.1"
-    end
-    ver
   end
 end
