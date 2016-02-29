@@ -27,12 +27,12 @@ defmodule Pg2PubSub do
 
   ## Examples
 
-      iex> Pg2PubSub.start_link :foo
-      {:ok, name: :foo}
+      iex> {:ok, pid} = Pg2PubSub.start_link :foo
+      iex> is_pid(pid)
+      true
 
       # can use the name when executing an operation
-      iex> Pg2PubSub.start_link :foo
-      {:ok, name: :foo}
+      iex> {:ok, pid} = Pg2PubSub.start_link :foo
       iex> Pg2PubSub.subscribe(:foo, "foo")
       :ok
 
@@ -40,7 +40,6 @@ defmodule Pg2PubSub do
   def start_link(name) do
     :ok = Logger.debug "Publisher starting with name..."
     GenServer.start_link(__MODULE__, :ok, name: name)
-    {:ok, name: name}
   end
 
   def init(:ok) do
