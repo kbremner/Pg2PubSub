@@ -22,6 +22,27 @@ defmodule Pg2PubSub do
     GenServer.start_link(__MODULE__, :ok)
   end
 
+  @doc """
+  Starts a PubSub process linked to the calling process and with the given name
+
+  ## Examples
+
+      iex> Pg2PubSub.start_link :foo
+      {:ok, name: :foo}
+
+      # can use the name when executing an operation
+      iex> Pg2PubSub.start_link :foo
+      {:ok, name: :foo}
+      iex> Pg2PubSub.subscribe(:foo, "foo")
+      :ok
+
+  """
+  def start_link(name) do
+    :ok = Logger.debug "Publisher starting with name..."
+    GenServer.start_link(__MODULE__, :ok, name: name)
+    {:ok, name: name}
+  end
+
   def init(:ok) do
     :ok = Logger.debug "Publisher started (#{inspect self})"
     {:ok, self}
